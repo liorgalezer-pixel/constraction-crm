@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ArchiveStatus, Client, Task } from "@/lib/types";
 import TaskList from "@/components/TaskList";
+import type { DragHandleProps } from "@/components/DraggableClientList";
 
 const LEAD_STATUS_LABEL: Record<Client["lead_status"], string> = {
   follow_up: "Follow Up",
@@ -28,11 +29,13 @@ export default function ClientCard({
   onUpdateTasks,
   onArchive,
   onEdit,
+  dragHandle,
 }: {
   client: Client;
   onUpdateTasks: (tasks: Task[]) => void;
   onArchive: (status: ArchiveStatus) => void;
   onEdit: () => void;
+  dragHandle?: DragHandleProps;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [tasksVisible, setTasksVisible] = useState(true);
@@ -68,43 +71,56 @@ export default function ClientCard({
 
   return (
     <div className="bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden">
-      <button
-        onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center justify-between px-4 py-3 text-left"
-      >
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <p dir="auto" className="text-white font-semibold truncate">
-              {client.full_name}
+      <div className="w-full flex items-center gap-1 px-2 py-3">
+        {dragHandle && (
+          <button
+            type="button"
+            onPointerDown={dragHandle.onPointerDown}
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Drag to reorder"
+            className="w-11 h-11 shrink-0 flex items-center justify-center rounded-full text-neutral-500 hover:text-neutral-300 active:text-neutral-300 transition cursor-grab active:cursor-grabbing touch-none"
+          >
+            ⠿
+          </button>
+        )}
+        <div
+          onClick={() => setExpanded((v) => !v)}
+          className="flex-1 min-w-0 flex items-center justify-between gap-2 text-left cursor-pointer"
+        >
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <p dir="auto" className="text-white font-semibold truncate">
+                {client.full_name}
+              </p>
+              <span
+                className={`text-xs font-medium rounded-md px-1.5 py-0.5 ${
+                  LEAD_STATUS_CLASS[client.lead_status]
+                }`}
+              >
+                {LEAD_STATUS_LABEL[client.lead_status]}
+              </span>
+            </div>
+            <p dir="auto" className="text-neutral-400 text-xs truncate">
+              {client.project_type}
             </p>
-            <span
-              className={`text-xs font-medium rounded-md px-1.5 py-0.5 ${
-                LEAD_STATUS_CLASS[client.lead_status]
-              }`}
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              aria-label="Edit client"
+              className="w-11 h-11 flex items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 active:bg-neutral-700 text-blue-400 transition"
             >
-              {LEAD_STATUS_LABEL[client.lead_status]}
+              ✎
+            </button>
+            <span className="text-neutral-400 text-sm">
+              {expanded ? "▲" : "▼"}
             </span>
           </div>
-          <p dir="auto" className="text-neutral-400 text-xs truncate">
-            {client.project_type}
-          </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit();
-            }}
-            aria-label="Edit client"
-            className="w-11 h-11 flex items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 active:bg-neutral-700 text-blue-400 transition"
-          >
-            ✎
-          </button>
-          <span className="text-neutral-400 text-sm">
-            {expanded ? "▲" : "▼"}
-          </span>
-        </div>
-      </button>
+      </div>
 
       <div className="px-4 pb-4 border-t border-neutral-800 pt-4">
         {tasksVisible ? (

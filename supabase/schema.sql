@@ -21,6 +21,7 @@ create table if not exists public.clients (
     check (archive_status in ('active', 'completed', 'cancelled')),
   lead_status text not null default 'follow_up'
     check (lead_status in ('follow_up', 'sold')),
+  sort_order integer,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -28,6 +29,7 @@ create table if not exists public.clients (
 create index if not exists clients_user_id_idx on public.clients (user_id);
 create index if not exists clients_archive_status_idx on public.clients (archive_status);
 create index if not exists clients_updated_at_idx on public.clients (updated_at desc);
+create index if not exists clients_sort_order_idx on public.clients (sort_order);
 
 -- Auto-update `updated_at` on every row update, so "most recently touched"
 -- sorting on the Active tab works without the app having to set it manually.

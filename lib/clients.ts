@@ -8,7 +8,8 @@ export async function fetchClients(
   const query = supabase
     .from("clients")
     .select("*")
-    .eq("archive_status", archiveStatus);
+    .eq("archive_status", archiveStatus)
+    .order("sort_order", { ascending: true, nullsFirst: false });
 
   const { data, error } =
     archiveStatus === "active"
@@ -58,6 +59,19 @@ export async function updateClientTasks(
     .eq("id", clientId);
 
   if (error) throw error;
+}
+
+export async function updateClientsSortOrder(
+  updates: { id: string; sort_order: number }[]
+): Promise<void> {
+  const supabase = createClient();
+  const results = await Promise.all(
+    updates.map(({ id, sort_order }) =>
+      supabase.from("clients").update({ sort_order }).eq("id", id)
+    )
+  );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) throw failed.error;
 }
 
 export async function updateClientArchiveStatus(

@@ -7,6 +7,7 @@ import {
   fetchClients,
   updateClientArchiveStatus,
   updateClientDetails,
+  updateClientsSortOrder,
   updateClientTasks,
 } from "@/lib/clients";
 import type { ArchiveStatus, Client, NewClientInput, Task } from "@/lib/types";
@@ -17,6 +18,7 @@ import Tabs from "@/components/Tabs";
 import ClientCard from "@/components/ClientCard";
 import ClientFormModal from "@/components/ClientFormModal";
 import PasteLeadModal from "@/components/PasteLeadModal";
+import DraggableClientList from "@/components/DraggableClientList";
 import Fab from "@/components/Fab";
 
 export default function HomePage() {
@@ -96,6 +98,13 @@ export default function HomePage() {
     await updateClientDetails(clientId, input);
   }
 
+  async function handleReorder(newOrder: Client[]) {
+    setClients(newOrder);
+    await updateClientsSortOrder(
+      newOrder.map((c, index) => ({ id: c.id, sort_order: index }))
+    );
+  }
+
   return (
     <div className="min-h-screen bg-neutral-950">
       <div className="sticky top-0 z-20 bg-neutral-950/95 backdrop-blur">
@@ -115,15 +124,33 @@ export default function HomePage() {
             No clients to show
           </p>
         )}
-        {filteredClients.map((client) => (
-          <ClientCard
-            key={client.id}
-            client={client}
-            onUpdateTasks={(tasks) => handleUpdateTasks(client.id, tasks)}
-            onArchive={(status) => handleArchive(client.id, status)}
-            onEdit={() => setEditingClient(client)}
-          />
-        ))}
+        {!loading && filteredClients.length > 0 && (
+          search.trim() ? (
+            filteredClients.map((client) => (
+              <ClientCard
+                key={client.id}
+                client={client}
+                onUpdateTasks={(tasks) => handleUpdateTasks(client.id, tasks)}
+                onArchive={(status) => handleArchive(client.id, status)}
+                onEdit={() => setEditingClient(client)}
+              />
+            ))
+          ) : (
+            <DraggableClientList
+              clients={filteredClients}
+              onReorder={handleReorder}
+              renderItem={(client, dragHandle) => (
+                <ClientCard
+                  client={client}
+                  onUpdateTasks={(tasks) => handleUpdateTasks(client.id, tasks)}
+                  onArchive={(status) => handleArchive(client.id, status)}
+                  onEdit={() => setEditingClient(client)}
+                  dragHandle={dragHandle}
+                />
+              )}
+            />
+          )
+        )}
       </main>
 
       <Fab onClick={() => setPasteModalOpen(true)} />

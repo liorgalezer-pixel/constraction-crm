@@ -26,6 +26,7 @@ export interface Client {
   tasks: Task[];
   archive_status: ArchiveStatus;
   lead_status: LeadStatus;
+  sort_order: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -37,6 +38,7 @@ export type NewClientInput = Omit<
   | "tasks"
   | "archive_status"
   | "lead_status"
+  | "sort_order"
   | "created_at"
   | "updated_at"
 > & {
