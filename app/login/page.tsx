@@ -51,7 +51,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-neutral-950 flex items-center justify-center px-4 safe-top safe-bottom">
       <div className="w-full max-w-sm bg-neutral-900 rounded-2xl p-6 shadow-xl border border-neutral-800">
         <h1 className="text-2xl font-bold text-white mb-1">Constraction CRM</h1>
         <p className="text-neutral-400 text-sm mb-6">
@@ -62,6 +62,10 @@ export default function LoginPage() {
           <input
             type="email"
             required
+            autoComplete="email"
+            inputMode="email"
+            autoCapitalize="none"
+            autoCorrect="off"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -70,6 +74,7 @@ export default function LoginPage() {
           <input
             type="password"
             required
+            autoComplete={mode === "signin" ? "current-password" : "new-password"}
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -100,7 +105,7 @@ export default function LoginPage() {
             setError(null);
             setInfoMessage(null);
           }}
-          className="w-full text-center text-neutral-400 hover:text-neutral-200 text-sm mt-4 transition"
+          className="w-full text-center text-neutral-400 hover:text-neutral-200 text-sm mt-2 py-3 transition"
         >
           {mode === "signin"
             ? "Don't have an account? Sign up"

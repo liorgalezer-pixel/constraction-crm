@@ -21,12 +21,12 @@ export default function PasteLeadModal({
 
   return (
     <div className="fixed inset-0 z-30 bg-black/60 flex items-end sm:items-center justify-center">
-      <div className="bg-neutral-900 w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl border border-neutral-800">
+      <div className="bg-neutral-900 w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl border border-neutral-800 safe-bottom">
         <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-800">
           <h2 className="text-white font-bold text-lg">Paste Lead</h2>
           <button
             onClick={onClose}
-            className="text-neutral-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-800 transition"
+            className="text-neutral-400 hover:text-white w-11 h-11 flex items-center justify-center rounded-full hover:bg-neutral-800 transition"
           >
             ✕
           </button>

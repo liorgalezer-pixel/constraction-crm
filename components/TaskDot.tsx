@@ -26,7 +26,11 @@ export default function TaskDot({
       type="button"
       aria-label={`Task status: ${status}`}
       onClick={() => onChange(NEXT_STATUS[status])}
-      className={`w-5 h-5 rounded-full shrink-0 transition-colors ${COLOR_CLASS[status]}`}
-    />
+      className="w-10 h-10 -m-2 flex items-center justify-center shrink-0"
+    >
+      <span
+        className={`w-5 h-5 rounded-full transition-colors ${COLOR_CLASS[status]}`}
+      />
+    </button>
   );
 }

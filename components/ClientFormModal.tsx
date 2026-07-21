@@ -85,14 +85,14 @@ export default function ClientFormModal({
 
   return (
     <div className="fixed inset-0 z-30 bg-black/60 flex items-end sm:items-center justify-center">
-      <div className="bg-neutral-900 w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto border border-neutral-800">
+      <div className="bg-neutral-900 w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto border border-neutral-800 safe-bottom">
         <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-800 sticky top-0 bg-neutral-900">
           <h2 className="text-white font-bold text-lg">
             {isEditMode ? "Edit Client" : "New Client"}
           </h2>
           <button
             onClick={onClose}
-            className="text-neutral-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-800 transition"
+            className="text-neutral-400 hover:text-white w-11 h-11 flex items-center justify-center rounded-full hover:bg-neutral-800 transition"
           >
             ✕
           </button>
@@ -107,6 +107,9 @@ export default function ClientFormModal({
             className="bg-neutral-800 text-white placeholder-neutral-500 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition"
           />
           <input
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
             placeholder="Phone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
@@ -114,6 +117,9 @@ export default function ClientFormModal({
           />
           <input
             type="email"
+            inputMode="email"
+            autoCapitalize="none"
+            autoCorrect="off"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -150,6 +156,7 @@ export default function ClientFormModal({
           <div className="grid grid-cols-2 gap-3">
             <input
               type="number"
+              inputMode="decimal"
               placeholder="Estimated cost"
               value={estimatedCost}
               onChange={(e) => setEstimatedCost(e.target.value)}
@@ -157,6 +164,7 @@ export default function ClientFormModal({
             />
             <input
               type="number"
+              inputMode="decimal"
               placeholder="Offered price"
               value={offeredPrice}
               onChange={(e) => setOfferedPrice(e.target.value)}
@@ -164,12 +172,12 @@ export default function ClientFormModal({
             />
           </div>
 
-          <label className="flex items-center gap-2 text-neutral-300 text-sm cursor-pointer">
+          <label className="flex items-center gap-2 text-neutral-300 text-sm cursor-pointer min-h-11 py-2 -my-2">
             <input
               type="checkbox"
               checked={hasMortgage}
               onChange={(e) => setHasMortgage(e.target.checked)}
-              className="w-4 h-4 accent-blue-600"
+              className="w-5 h-5 accent-blue-600"
             />
             Has mortgage?
           </label>
@@ -181,6 +189,7 @@ export default function ClientFormModal({
           >
             <input
               type="number"
+              inputMode="decimal"
               placeholder="Mortgage balance"
               value={mortgageBalance}
               onChange={(e) => setMortgageBalance(e.target.value)}

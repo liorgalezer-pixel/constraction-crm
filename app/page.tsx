@@ -98,11 +98,13 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-neutral-950">
-      <Header email={userEmail} />
-      <SearchBar value={search} onChange={setSearch} />
-      <Tabs active={tab} onChange={setTab} />
+      <div className="sticky top-0 z-20 bg-neutral-950/95 backdrop-blur">
+        <Header email={userEmail} />
+        <SearchBar value={search} onChange={setSearch} />
+        <Tabs active={tab} onChange={setTab} />
+      </div>
 
-      <main className="px-4 py-4 flex flex-col gap-3 pb-24">
+      <main className="px-4 py-4 flex flex-col gap-3 pb-28 safe-bottom">
         {loading && (
           <p className="text-neutral-500 text-sm text-center py-8">
             Loading...

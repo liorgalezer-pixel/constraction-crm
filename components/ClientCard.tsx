@@ -96,7 +96,7 @@ export default function ClientCard({
               onEdit();
             }}
             aria-label="Edit client"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 text-blue-400 transition"
+            className="w-11 h-11 flex items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 active:bg-neutral-700 text-blue-400 transition"
           >
             ✎
           </button>
@@ -145,7 +145,7 @@ export default function ClientCard({
                   <span className="text-neutral-300">{client.phone}</span>
                   <button
                     onClick={() => copyToClipboard("phone", client.phone!)}
-                    className="text-blue-400 hover:text-blue-300 text-xs"
+                    className="text-blue-400 hover:text-blue-300 text-xs p-2 -m-2"
                   >
                     {copiedField === "phone" ? "Copied!" : "Copy"}
                   </button>
@@ -158,7 +158,7 @@ export default function ClientCard({
                   </span>
                   <button
                     onClick={() => copyToClipboard("email", client.email!)}
-                    className="text-blue-400 hover:text-blue-300 text-xs shrink-0 ml-2"
+                    className="text-blue-400 hover:text-blue-300 text-xs shrink-0 ml-2 p-2 -m-2"
                   >
                     {copiedField === "email" ? "Copied!" : "Copy"}
                   </button>
@@ -174,7 +174,7 @@ export default function ClientCard({
                       onClick={() =>
                         copyToClipboard("address", client.address!)
                       }
-                      className="text-blue-400 hover:text-blue-300 text-xs"
+                      className="text-blue-400 hover:text-blue-300 text-xs p-2 -m-2"
                     >
                       {copiedField === "address" ? "Copied!" : "Copy"}
                     </button>
@@ -183,7 +183,7 @@ export default function ClientCard({
                         <button
                           type="button"
                           onClick={() => setNavMenuOpen((v) => !v)}
-                          className="text-green-400 hover:text-green-300 text-xs"
+                          className="text-green-400 hover:text-green-300 text-xs p-2 -m-2"
                         >
                           Navigate
                         </button>
@@ -196,7 +196,7 @@ export default function ClientCard({
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={() => setNavMenuOpen(false)}
-                                className="block px-3 py-2 text-xs text-neutral-200 hover:bg-neutral-700 transition"
+                                className="block px-4 py-3 text-xs text-neutral-200 hover:bg-neutral-700 transition"
                               >
                                 {option.label}
                               </a>
