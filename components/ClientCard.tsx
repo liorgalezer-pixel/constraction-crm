@@ -37,6 +37,7 @@ export default function ClientCard({
   const [expanded, setExpanded] = useState(false);
   const [tasksVisible, setTasksVisible] = useState(true);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [navMenuOpen, setNavMenuOpen] = useState(false);
 
   async function copyToClipboard(field: string, value: string) {
     await navigator.clipboard.writeText(value);
@@ -44,8 +45,25 @@ export default function ClientCard({
     setTimeout(() => setCopiedField((f) => (f === field ? null : f)), 1500);
   }
 
-  const mapsUrl = client.address
-    ? `https://maps.google.com/?q=${encodeURIComponent(client.address)}`
+  const encodedAddress = client.address
+    ? encodeURIComponent(client.address)
+    : null;
+
+  const navOptions = encodedAddress
+    ? [
+        {
+          label: "Google Maps",
+          href: `https://maps.google.com/?q=${encodedAddress}`,
+        },
+        {
+          label: "Waze",
+          href: `https://waze.com/ul?q=${encodedAddress}&navigate=yes`,
+        },
+        {
+          label: "Apple Maps",
+          href: `https://maps.apple.com/?q=${encodedAddress}`,
+        },
+      ]
     : null;
 
   return (
@@ -147,15 +165,32 @@ export default function ClientCard({
                     >
                       {copiedField === "address" ? "Copied!" : "Copy"}
                     </button>
-                    {mapsUrl && (
-                      <a
-                        href={mapsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-green-400 hover:text-green-300 text-xs"
-                      >
-                        Navigate
-                      </a>
+                    {navOptions && (
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setNavMenuOpen((v) => !v)}
+                          className="text-green-400 hover:text-green-300 text-xs"
+                        >
+                          Navigate
+                        </button>
+                        {navMenuOpen && (
+                          <div className="absolute right-0 z-10 mt-2 w-36 bg-neutral-800 border border-neutral-700 rounded-lg overflow-hidden shadow-lg">
+                            {navOptions.map((option) => (
+                              <a
+                                key={option.label}
+                                href={option.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => setNavMenuOpen(false)}
+                                className="block px-3 py-2 text-xs text-neutral-200 hover:bg-neutral-700 transition"
+                              >
+                                {option.label}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
