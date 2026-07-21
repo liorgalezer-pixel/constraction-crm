@@ -10,7 +10,6 @@ interface Ghost {
   left: number;
   top: number;
   width: number;
-  height: number;
   grabOffsetY: number;
 }
 
@@ -33,8 +32,9 @@ export default function DraggableClientList({
 
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const longPressTimer = useRef<number | null>(null);
-  const targetIndexRef = useRef(0);
   const cleanupEarlyListeners = useRef<() => void>(() => {});
+  const orderRef = useRef(order);
+  orderRef.current = order;
 
   useEffect(() => {
     if (!draggingId) setOrder(clients);
@@ -79,13 +79,11 @@ export default function DraggableClientList({
       const el = itemRefs.current.get(clientId);
       if (!el) return;
       const rect = el.getBoundingClientRect();
-      targetIndexRef.current = order.findIndex((c) => c.id === clientId);
       setDraggingId(clientId);
       setGhost({
         left: rect.left,
         top: rect.top,
         width: rect.width,
-        height: rect.height,
         grabOffsetY: startY - rect.top,
       });
       if (navigator.vibrate) navigator.vibrate(15);
@@ -96,9 +94,11 @@ export default function DraggableClientList({
     if (!draggingId) return;
 
     function handleMove(e: PointerEvent) {
+      e.preventDefault();
       setGhost((g) => (g ? { ...g, top: e.clientY - g.grabOffsetY } : g));
 
-      const others = order.filter((c) => c.id !== draggingId);
+      const current = orderRef.current;
+      const others = current.filter((c) => c.id !== draggingId);
       let newIndex = others.length;
       for (let i = 0; i < others.length; i++) {
         const el = itemRefs.current.get(others[i].id);
@@ -109,27 +109,26 @@ export default function DraggableClientList({
           break;
         }
       }
-      targetIndexRef.current = newIndex;
+
+      const dragged = current.find((c) => c.id === draggingId);
+      if (!dragged) return;
+      const newOrder = [
+        ...others.slice(0, newIndex),
+        dragged,
+        ...others.slice(newIndex),
+      ];
+      const changed = newOrder.some((c, i) => c.id !== current[i]?.id);
+      if (changed) setOrder(newOrder);
     }
 
     function handleUp() {
-      const dragged = order.find((c) => c.id === draggingId);
-      if (dragged) {
-        const others = order.filter((c) => c.id !== draggingId);
-        const newOrder = [
-          ...others.slice(0, targetIndexRef.current),
-          dragged,
-          ...others.slice(targetIndexRef.current),
-        ];
-        setOrder(newOrder);
-        onReorder(newOrder);
-      }
       setDraggingId(null);
       setGhost(null);
+      onReorder(orderRef.current);
     }
 
     document.body.style.touchAction = "none";
-    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointermove", handleMove, { passive: false });
     window.addEventListener("pointerup", handleUp);
     window.addEventListener("pointercancel", handleUp);
     return () => {
@@ -138,44 +137,43 @@ export default function DraggableClientList({
       window.removeEventListener("pointerup", handleUp);
       window.removeEventListener("pointercancel", handleUp);
     };
-  }, [draggingId, order, onReorder]);
-
-  const draggedClient = draggingId
-    ? order.find((c) => c.id === draggingId) ?? null
-    : null;
-  const visibleOrder = draggingId
-    ? order.filter((c) => c.id !== draggingId)
-    : order;
+  }, [draggingId, onReorder]);
 
   return (
     <div className="flex flex-col gap-3">
-      {visibleOrder.map((client) => (
+      {order.map((client) => (
         <div
           key={client.id}
           ref={(el) => {
             if (el) itemRefs.current.set(client.id, el);
             else itemRefs.current.delete(client.id);
           }}
+          style={client.id === draggingId ? { opacity: 0 } : undefined}
         >
           {renderItem(client, {
             onPointerDown: (e) => handlePointerDown(e, client.id),
           })}
         </div>
       ))}
-      {draggedClient && ghost && (
-        <div
-          style={{
-            position: "fixed",
-            left: ghost.left,
-            top: ghost.top,
-            width: ghost.width,
-            zIndex: 50,
-          }}
-          className="opacity-95 shadow-2xl scale-[1.02] pointer-events-none"
-        >
-          {renderItem(draggedClient, { onPointerDown: () => {} })}
-        </div>
-      )}
+      {ghost &&
+        (() => {
+          const draggedClient = order.find((c) => c.id === draggingId);
+          if (!draggedClient) return null;
+          return (
+            <div
+              style={{
+                position: "fixed",
+                left: ghost.left,
+                top: ghost.top,
+                width: ghost.width,
+                zIndex: 50,
+              }}
+              className="opacity-95 shadow-2xl scale-[1.02] pointer-events-none"
+            >
+              {renderItem(draggedClient, { onPointerDown: () => {} })}
+            </div>
+          );
+        })()}
     </div>
   );
 }
