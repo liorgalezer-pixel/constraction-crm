@@ -12,6 +12,7 @@ export default function SearchBar({
       <div className="relative">
         <input
           type="text"
+          dir="auto"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Search by name, project type, address, or notes..."

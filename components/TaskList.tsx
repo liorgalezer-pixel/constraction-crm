@@ -49,6 +49,7 @@ export default function TaskList({
           {headerLeft}
           <input
             autoFocus
+            dir="auto"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -92,7 +93,9 @@ export default function TaskList({
               status={task.status}
               onChange={(status) => handleStatusChange(task.id, status)}
             />
-            <span className="text-neutral-200 text-sm flex-1">{task.text}</span>
+            <span dir="auto" className="text-neutral-200 text-sm flex-1">
+              {task.text}
+            </span>
             {task.status === "green" && (
               <button
                 type="button"

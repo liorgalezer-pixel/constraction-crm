@@ -39,6 +39,7 @@ export default function PasteLeadModal({
           </p>
           <textarea
             autoFocus
+            dir="auto"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder={

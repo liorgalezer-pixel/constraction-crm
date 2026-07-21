@@ -74,7 +74,7 @@ export default function ClientCard({
       >
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <p className="text-white font-semibold truncate">
+            <p dir="auto" className="text-white font-semibold truncate">
               {client.full_name}
             </p>
             <span
@@ -85,7 +85,7 @@ export default function ClientCard({
               {LEAD_STATUS_LABEL[client.lead_status]}
             </span>
           </div>
-          <p className="text-neutral-400 text-xs truncate">
+          <p dir="auto" className="text-neutral-400 text-xs truncate">
             {client.project_type}
           </p>
         </div>
@@ -166,7 +166,7 @@ export default function ClientCard({
               )}
               {client.address && (
                 <div className="flex items-center justify-between bg-neutral-800/50 rounded-lg px-3 py-2">
-                  <span className="text-neutral-300 truncate">
+                  <span dir="auto" className="text-neutral-300 truncate">
                     {client.address}
                   </span>
                   <div className="flex items-center gap-2 shrink-0 ml-2">
@@ -241,7 +241,10 @@ export default function ClientCard({
                 <p className="text-neutral-500 text-xs mb-1">
                   Description / Notes
                 </p>
-                <p className="text-neutral-300 text-sm whitespace-pre-wrap">
+                <p
+                  dir="auto"
+                  className="text-neutral-300 text-sm whitespace-pre-wrap"
+                >
                   {client.description}
                 </p>
               </div>

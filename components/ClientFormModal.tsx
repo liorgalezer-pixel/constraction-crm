@@ -101,6 +101,7 @@ export default function ClientFormModal({
         <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-4">
           <input
             required
+            dir="auto"
             placeholder="Full name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
@@ -126,12 +127,14 @@ export default function ClientFormModal({
             className="bg-neutral-800 text-white placeholder-neutral-500 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition"
           />
           <input
+            dir="auto"
             placeholder="Address"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             className="bg-neutral-800 text-white placeholder-neutral-500 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition"
           />
           <input
+            dir="auto"
             list="project-types"
             placeholder="Project type"
             value={projectType}
@@ -198,6 +201,7 @@ export default function ClientFormModal({
           </div>
 
           <textarea
+            dir="auto"
             placeholder="Description / meeting notes"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
