@@ -1,65 +1,162 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useMemo, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import {
+  createClientRecord,
+  fetchClients,
+  updateClientArchiveStatus,
+  updateClientDetails,
+  updateClientTasks,
+} from "@/lib/clients";
+import type { ArchiveStatus, Client, NewClientInput, Task } from "@/lib/types";
+import type { ParsedLead } from "@/lib/parseLead";
+import Header from "@/components/Header";
+import SearchBar from "@/components/SearchBar";
+import Tabs from "@/components/Tabs";
+import ClientCard from "@/components/ClientCard";
+import ClientFormModal from "@/components/ClientFormModal";
+import PasteLeadModal from "@/components/PasteLeadModal";
+import Fab from "@/components/Fab";
+
+export default function HomePage() {
+  const supabase = createClient();
+
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [tab, setTab] = useState<ArchiveStatus>("active");
+  const [search, setSearch] = useState("");
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [pasteModalOpen, setPasteModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [prefillLead, setPrefillLead] = useState<ParsedLead | undefined>(
+    undefined
+  );
+  const [editingClient, setEditingClient] = useState<Client | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUserId(data.user?.id ?? null);
+      setUserEmail(data.user?.email ?? null);
+    });
+  }, [supabase]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    fetchClients(tab)
+      .then((data) => {
+        if (!cancelled) setClients(data);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [tab]);
+
+  const filteredClients = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return clients;
+    return clients.filter((client) =>
+      [client.full_name, client.project_type, client.address, client.description]
+        .filter(Boolean)
+        .some((field) => field!.toLowerCase().includes(query))
+    );
+  }, [clients, search]);
+
+  async function handleCreate(input: NewClientInput) {
+    if (!userId) return;
+    const created = await createClientRecord(input, userId);
+    if (tab === "active") {
+      setClients((prev) => [created, ...prev]);
+    }
+  }
+
+  async function handleUpdateTasks(clientId: string, tasks: Task[]) {
+    setClients((prev) =>
+      prev.map((c) => (c.id === clientId ? { ...c, tasks } : c))
+    );
+    await updateClientTasks(clientId, tasks);
+  }
+
+  async function handleArchive(clientId: string, status: ArchiveStatus) {
+    await updateClientArchiveStatus(clientId, status);
+    setClients((prev) => prev.filter((c) => c.id !== clientId));
+  }
+
+  async function handleUpdateDetails(clientId: string, input: NewClientInput) {
+    setClients((prev) =>
+      prev.map((c) => (c.id === clientId ? { ...c, ...input } : c))
+    );
+    await updateClientDetails(clientId, input);
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen bg-neutral-950">
+      <Header email={userEmail} />
+      <SearchBar value={search} onChange={setSearch} />
+      <Tabs active={tab} onChange={setTab} />
+
+      <main className="px-4 py-4 flex flex-col gap-3 pb-24">
+        {loading && (
+          <p className="text-neutral-500 text-sm text-center py-8">
+            Loading...
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+        )}
+        {!loading && filteredClients.length === 0 && (
+          <p className="text-neutral-500 text-sm text-center py-8">
+            No clients to show
+          </p>
+        )}
+        {filteredClients.map((client) => (
+          <ClientCard
+            key={client.id}
+            client={client}
+            onUpdateTasks={(tasks) => handleUpdateTasks(client.id, tasks)}
+            onArchive={(status) => handleArchive(client.id, status)}
+            onEdit={() => setEditingClient(client)}
+          />
+        ))}
       </main>
+
+      <Fab onClick={() => setPasteModalOpen(true)} />
+
+      {pasteModalOpen && (
+        <PasteLeadModal
+          onClose={() => setPasteModalOpen(false)}
+          onSkip={() => {
+            setPrefillLead(undefined);
+            setPasteModalOpen(false);
+            setModalOpen(true);
+          }}
+          onParsed={(lead) => {
+            setPrefillLead(lead);
+            setPasteModalOpen(false);
+            setModalOpen(true);
+          }}
+        />
+      )}
+
+      {modalOpen && (
+        <ClientFormModal
+          initial={prefillLead}
+          onClose={() => setModalOpen(false)}
+          onSave={handleCreate}
+        />
+      )}
+
+      {editingClient && (
+        <ClientFormModal
+          client={editingClient}
+          onClose={() => setEditingClient(undefined)}
+          onSave={(input) => handleUpdateDetails(editingClient.id, input)}
+        />
+      )}
     </div>
   );
 }
