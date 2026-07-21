@@ -107,15 +107,28 @@ export default function ClientCard({
       </button>
 
       <div className="px-4 pb-4 border-t border-neutral-800 pt-4">
-        <button
-          type="button"
-          onClick={() => setTasksVisible((v) => !v)}
-          className="text-neutral-500 hover:text-neutral-300 text-xs mb-2 transition"
-        >
-          {tasksVisible ? "Hide tasks" : "Show tasks"}
-        </button>
-        {tasksVisible && (
-          <TaskList tasks={client.tasks} onChange={onUpdateTasks} />
+        {tasksVisible ? (
+          <TaskList
+            tasks={client.tasks}
+            onChange={onUpdateTasks}
+            headerLeft={
+              <button
+                type="button"
+                onClick={() => setTasksVisible(false)}
+                className="text-neutral-500 hover:text-neutral-300 text-xs transition"
+              >
+                Hide tasks
+              </button>
+            }
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setTasksVisible(true)}
+            className="text-neutral-500 hover:text-neutral-300 text-xs transition"
+          >
+            Show tasks
+          </button>
         )}
       </div>
 
