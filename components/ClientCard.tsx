@@ -160,12 +160,28 @@ export default function ClientCard({
               {client.phone && (
                 <div className="flex items-center justify-between bg-neutral-800/50 rounded-lg px-3 py-2">
                   <span className="text-neutral-300">{client.phone}</span>
-                  <button
-                    onClick={() => copyToClipboard("phone", client.phone!)}
-                    className="text-blue-400 hover:text-blue-300 text-xs p-2 -m-2"
-                  >
-                    {copiedField === "phone" ? "Copied!" : "Copy"}
-                  </button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <a
+                      href={`tel:${client.phone}`}
+                      aria-label="Call"
+                      className="text-green-400 hover:text-green-300 p-2 -m-2"
+                    >
+                      📞
+                    </a>
+                    <a
+                      href={`sms:${client.phone}`}
+                      aria-label="Message"
+                      className="text-blue-400 hover:text-blue-300 p-2 -m-2"
+                    >
+                      💬
+                    </a>
+                    <button
+                      onClick={() => copyToClipboard("phone", client.phone!)}
+                      className="text-blue-400 hover:text-blue-300 text-xs p-2 -m-2"
+                    >
+                      {copiedField === "phone" ? "Copied!" : "Copy"}
+                    </button>
+                  </div>
                 </div>
               )}
               {client.email && (
