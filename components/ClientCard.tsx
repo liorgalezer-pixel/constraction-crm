@@ -78,7 +78,8 @@ export default function ClientCard({
             onPointerDown={dragHandle.onPointerDown}
             onClick={(e) => e.stopPropagation()}
             aria-label="Drag to reorder"
-            className="w-11 h-11 shrink-0 flex items-center justify-center rounded-full text-neutral-500 hover:text-neutral-300 active:text-neutral-300 transition cursor-grab active:cursor-grabbing touch-none"
+            style={{ touchAction: "none" }}
+            className="w-11 h-11 shrink-0 flex items-center justify-center rounded-full text-neutral-500 hover:text-neutral-300 active:text-neutral-300 transition cursor-grab active:cursor-grabbing"
           >
             ⠿
           </button>
