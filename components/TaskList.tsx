@@ -15,6 +15,8 @@ export default function TaskList({
 }) {
   const [input, setInput] = useState("");
   const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState("");
 
   function addTask() {
     if (!input.trim()) return;
@@ -40,6 +42,32 @@ export default function TaskList({
 
   function handleDelete(taskId: string) {
     onChange(tasks.filter((t) => t.id !== taskId));
+  }
+
+  function startEditing(task: Task) {
+    setEditingId(task.id);
+    setEditingText(task.text);
+  }
+
+  function commitEdit() {
+    if (!editingId) return;
+    const trimmed = editingText.trim();
+    if (trimmed) {
+      onChange(
+        tasks.map((t) => (t.id === editingId ? { ...t, text: trimmed } : t))
+      );
+    }
+    setEditingId(null);
+  }
+
+  function handleEditKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      commitEdit();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      setEditingId(null);
+    }
   }
 
   return (
@@ -93,10 +121,32 @@ export default function TaskList({
               status={task.status}
               onChange={(status) => handleStatusChange(task.id, status)}
             />
-            <span dir="auto" className="text-neutral-200 text-sm flex-1">
-              {task.text}
-            </span>
-            {task.status === "green" && (
+            {editingId === task.id ? (
+              <input
+                autoFocus
+                dir="auto"
+                value={editingText}
+                onChange={(e) => setEditingText(e.target.value)}
+                onKeyDown={handleEditKeyDown}
+                onBlur={commitEdit}
+                className="flex-1 bg-neutral-900 text-white text-sm rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500 transition min-w-0"
+              />
+            ) : (
+              <span dir="auto" className="text-neutral-200 text-sm flex-1">
+                {task.text}
+              </span>
+            )}
+            {editingId !== task.id && (
+              <button
+                type="button"
+                onClick={() => startEditing(task)}
+                aria-label="Edit task"
+                className="text-neutral-500 hover:text-blue-400 transition shrink-0 p-2 -m-2"
+              >
+                ✎
+              </button>
+            )}
+            {task.status === "green" && editingId !== task.id && (
               <button
                 type="button"
                 onClick={() => handleDelete(task.id)}

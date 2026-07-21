@@ -19,7 +19,6 @@ import ClientCard from "@/components/ClientCard";
 import ClientFormModal from "@/components/ClientFormModal";
 import PasteLeadModal from "@/components/PasteLeadModal";
 import DraggableClientList from "@/components/DraggableClientList";
-import Fab from "@/components/Fab";
 
 export default function HomePage() {
   const supabase = createClient();
@@ -110,10 +109,14 @@ export default function HomePage() {
       <div className="sticky top-0 z-20 bg-neutral-950/95 backdrop-blur">
         <Header email={userEmail} />
         <SearchBar value={search} onChange={setSearch} />
-        <Tabs active={tab} onChange={setTab} />
+        <Tabs
+          active={tab}
+          onChange={setTab}
+          onAdd={() => setPasteModalOpen(true)}
+        />
       </div>
 
-      <main className="px-4 py-4 flex flex-col gap-3 pb-28 safe-bottom">
+      <main className="px-4 py-4 flex flex-col gap-3 pb-8 safe-bottom">
         {loading && (
           <p className="text-neutral-500 text-sm text-center py-8">
             Loading...
@@ -152,8 +155,6 @@ export default function HomePage() {
           )
         )}
       </main>
-
-      <Fab onClick={() => setPasteModalOpen(true)} />
 
       {pasteModalOpen && (
         <PasteLeadModal
