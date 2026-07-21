@@ -23,6 +23,19 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   -webkit-tap-highlight-color: transparent;
+  /* Long-pressing a card is used for drag-to-reorder, so the OS text-selection
+     / callout menu (Copy/Look Up) must not compete with it. Form fields opt
+     back into normal selection below. */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
 }
 
 /* iOS Safari auto-zooms the page when a focused input's font-size is below
