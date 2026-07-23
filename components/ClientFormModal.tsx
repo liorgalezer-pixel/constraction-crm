@@ -26,6 +26,10 @@ function toFormValues(source?: ParsedLead | Client) {
       source && "mortgage_balance" in source && source.mortgage_balance !== null
         ? String(source.mortgage_balance)
         : "",
+    homeValue:
+      source && "home_value" in source && source.home_value !== null
+        ? String(source.home_value)
+        : "",
     description: source?.description ?? "",
   };
 }
@@ -53,6 +57,7 @@ export default function ClientFormModal({
   const [offeredPrice, setOfferedPrice] = useState(defaults.offeredPrice);
   const [hasMortgage, setHasMortgage] = useState(defaults.hasMortgage);
   const [mortgageBalance, setMortgageBalance] = useState(defaults.mortgageBalance);
+  const [homeValue, setHomeValue] = useState(defaults.homeValue);
   const [description, setDescription] = useState(defaults.description);
   const [leadStatus, setLeadStatus] = useState<LeadStatus>(
     client?.lead_status ?? "follow_up"
@@ -74,6 +79,7 @@ export default function ClientFormModal({
         has_mortgage: hasMortgage,
         mortgage_balance:
           hasMortgage && mortgageBalance ? Number(mortgageBalance) : null,
+        home_value: homeValue ? Number(homeValue) : null,
         description: description || null,
         lead_status: leadStatus,
       });
@@ -131,6 +137,26 @@ export default function ClientFormModal({
             placeholder="Address"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
+            className="bg-neutral-800 text-white placeholder-neutral-500 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition"
+          />
+          {address.trim() && (
+            <a
+              href={`https://www.zillow.com/homes/${encodeURIComponent(
+                address.trim()
+              )}_rb/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 text-xs self-start p-2 -m-2"
+            >
+              Check on Zillow ↗
+            </a>
+          )}
+          <input
+            type="number"
+            inputMode="decimal"
+            placeholder="Estimated home value (from Zillow)"
+            value={homeValue}
+            onChange={(e) => setHomeValue(e.target.value)}
             className="bg-neutral-800 text-white placeholder-neutral-500 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition"
           />
           <input

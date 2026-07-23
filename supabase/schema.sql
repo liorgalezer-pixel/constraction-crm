@@ -15,6 +15,7 @@ create table if not exists public.clients (
   offered_price numeric,
   has_mortgage boolean not null default false,
   mortgage_balance numeric,
+  home_value numeric,
   description text,
   tasks jsonb not null default '[]'::jsonb,
   archive_status text not null default 'active'

@@ -238,6 +238,14 @@ export default function ClientCard({
                         )}
                       </div>
                     )}
+                    <a
+                      href={`https://www.zillow.com/homes/${encodedAddress}_rb/`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 text-xs p-2 -m-2"
+                    >
+                      Zillow
+                    </a>
                   </div>
                 </div>
               )}
@@ -257,6 +265,17 @@ export default function ClientCard({
                 </p>
               </div>
             </div>
+
+            {client.home_value !== null && (
+              <div className="bg-neutral-800/50 rounded-lg px-3 py-2">
+                <p className="text-neutral-500 text-xs">
+                  Estimated Home Value
+                </p>
+                <p className="text-white font-semibold">
+                  {formatCurrency(client.home_value)}
+                </p>
+              </div>
+            )}
 
             {client.has_mortgage && (
               <div className="bg-blue-950/40 border border-blue-900 rounded-lg px-3 py-2">

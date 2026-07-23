@@ -22,6 +22,7 @@ export interface Client {
   offered_price: number | null;
   has_mortgage: boolean;
   mortgage_balance: number | null;
+  home_value: number | null;
   description: string | null;
   tasks: Task[];
   archive_status: ArchiveStatus;
